@@ -26,14 +26,4 @@ class Rule
     {
         return self::CARD_POINTS;
     }
-
-    public function getPlayerPoint(): int
-    {
-        return self::PLAYER_POINT;
-    }
-
-    public function getDealerPoint(): int
-    {
-        return self::DEALER_POINT;
-    }
 }

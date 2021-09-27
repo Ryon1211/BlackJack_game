@@ -27,15 +27,4 @@ final class RuleTest extends TestCase
             'K' => 10
         ], $cardDeck->getCardPoints());
     }
-
-    public function testGetPlayerPoint(): void
-    {
-        $cardDeck = new Rule();
-        $this->assertSame(21, $cardDeck->getPlayerPoint());
-    }
-    public function testGetDealerPoint(): void
-    {
-        $cardDeck = new Rule();
-        $this->assertSame(17, $cardDeck->getDealerPoint());
-    }
 }
