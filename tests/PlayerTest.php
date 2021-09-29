@@ -7,6 +7,7 @@ use CardDeck\CardDeck;
 use Player\Player;
 use Rule\Rule;
 
+require_once(__DIR__ . '/../lib/Role.php');
 require_once(__DIR__ . '/../lib/CardDeck.php');
 require_once(__DIR__ . '/../lib/Player.php');
 require_once(__DIR__ . '/../lib/Rule.php');
