@@ -1,80 +1,72 @@
 <?php
 
-class Dealer
+declare(strict_types=1);
+
+namespace Dealer;
+
+use CardDeck\CardDeck;
+use Role\Role;
+use Rule\Rule;
+
+class Dealer extends Role
 {
-    const INIT_DRAW_NUMBER = 2;
-    const DEALER_TAKE_POINT = 17;
-
-    private array $cards;
-    private int $point = 0;
-
+    /**
+     * コンストラクタ
+     *
+     * @param Rule $rule
+     * @param CardDeck $cardDeck
+     */
     public function __construct(public Rule $rule, public CardDeck $cardDeck)
     {
+        parent::__construct($rule, $cardDeck);
     }
 
-    public function initDrawCard(): void
+    /**
+     * ゲーム開始時に複数枚のカードを引く処理
+     *
+     * @return void
+     */
+    public function firstDrawCard(): void
     {
         $count = 0;
 
-        while ($count < self::INIT_DRAW_NUMBER) {
+        while ($count < $this->firstDrawCount) {
             $this->draw();
             $count++;
         }
 
-        $suit_num = $this->getSuitAndNumber(0);
-        echo "ディーラーの引いたカードは{$suit_num['suit']}の{$suit_num['number']}です。" . PHP_EOL .
+        $suitNum = $this->getSuitAndNumber(0);
+        echo "ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL .
             'ディーラーの引いた２枚めのカードはわかりません。' . PHP_EOL;
     }
 
-    public function drawCard()
+    /**
+     * ディーラーのターンになったとき、一定の得点以上になるまでカードを引く処理
+     *
+     * @return void
+     */
+    public function drawCard(): void
     {
-        $count = self::INIT_DRAW_NUMBER;
-
-        $suit_num = $this->getSuitAndNumber(self::INIT_DRAW_NUMBER - 1);
-        echo "ディーラーの引いた2枚目のカードは{$suit_num['suit']}の{$suit_num['number']}でした。" . PHP_EOL;
+        $this->showSecondCard();
         echo "ディーラーの現在の得点は{$this->getPoint()}です。" . PHP_EOL;
 
-        while (true) {
-            // ディーラーの得点が17点を超えていない場合
+        $count = $this->firstDrawCount;
+        while ($this->point < $this->dealerTakePoint) {
             $this->draw();
-            // →ディーラーの引いた一つ前に引いたカードを表示
-            $suit_num = $this->getSuitAndNumber($count);
-            echo "ディーラーの引いたカードは{$suit_num['suit']}の{$suit_num['number']}でした。" . PHP_EOL;
-
-            if (self::DEALER_TAKE_POINT <= $this->point) {
-                break;
-            }
+            $suitNum = $this->getSuitAndNumber($count);
+            echo "ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}でした。" . PHP_EOL;
+            $count++;
         }
     }
 
-    public function draw(): void
+    /**
+     * 2枚目のカードを表示する関数
+     *
+     * @return void
+     */
+    public function showSecondCard(): void
     {
-        // →ディーラーがカードを引く
-        $card = $this->drawCardsFromDeck();
-        $this->cards[] = $card;
-        $this->setPoint($card);
-    }
-
-    public function drawCardsFromDeck(): Card
-    {
-        return $this->cardDeck->drawCard();
-    }
-
-    public function getPoint(): int
-    {
-        return $this->point;
-    }
-
-    private function setPoint(Card $card): void
-    {
-        $this->point += $this->rule->getCardPoints()[$card->cardNumber];
-    }
-
-    public function getSuitAndNumber(int $num): array
-    {
-        return [
-            'suit' => $this->cards[$num]->cardSuit,
-            'number' => $this->cards[$num]->cardNumber
-        ];
+        $suitNum = $this->getSuitAndNumber($this->firstDrawCount - 1);
+        echo "ディーラーの引いた2枚目のカードは{$suitNum['suit']}の{$suitNum['number']}でした。" . PHP_EOL;
     }
 }

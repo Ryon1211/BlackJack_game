@@ -3,21 +3,26 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use CardDeck\CardDeck;
+use Dealer\Dealer;
+use Rule\Rule;
 
 require_once(__DIR__ . '/../lib/CardDeck.php');
 require_once(__DIR__ . '/../lib/Dealer.php');
 require_once(__DIR__ . '/../lib/Rule.php');
 
+
+
 final class DealerTest extends TestCase
 {
-    public function testInitDraw(): void
+    public function testFirstDraw(): void
     {
         $rule = new Rule();
         $cardDeck = new CardDeck();
         $dealer = new Dealer($rule, $cardDeck);
         // 標準出力のバッファを開始
         ob_start();
-        $dealer->initDrawCard();
+        $dealer->firstDrawCard();
         // 標準出力のバッファを閉じて、結果の取得
         $message = ob_get_clean();
         $regExp = '/^ディーラーの引いたカードは(クラブ|スペード|ダイヤ|ハート)の([2-9]|10|A|J|Q|K)です。\nディーラーの引いた２枚めのカードはわかりません。/';

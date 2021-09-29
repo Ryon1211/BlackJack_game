@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Card\Card;
+use CardDeck\CardDeck;
 
 require_once(__DIR__ . '/../lib/CardDeck.php');
 

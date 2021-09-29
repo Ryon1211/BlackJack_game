@@ -1,82 +1,71 @@
 <?php
 
-require_once('CardDeck.php');
+declare(strict_types=1);
 
-class Player
+namespace Player;
+
+use CardDeck\CardDeck;
+use Role\Role;
+use Rule\Rule;
+
+class Player extends Role
 {
-    const INIT_DRAW_NUMBER = 2;
-
-    private array $cards;
-    private int $point = 0;
-
+    /**
+     * コンストラクタ
+     *
+     * @param Rule $rule
+     * @param CardDeck $cardDeck
+     */
     public function __construct(public Rule $rule, public CardDeck $cardDeck)
     {
+        parent::__construct($rule, $cardDeck);
     }
 
-    // プレイヤーがカードを２枚引く
-    public function initDrawCard(): void
+    /**
+     * ゲーム開始時に複数枚のカードを引く処理
+     *
+     * @return void
+     */
+    public function firstDrawCard(): void
     {
         $count = 0;
 
-        while ($count < self::INIT_DRAW_NUMBER) {
+        while ($count < $this->firstDrawCount) {
             $this->draw();
-            $suit_num = $this->getSuitAndNumber($count);
-            echo "あなたの引いたカードは{$suit_num['suit']}の{$suit_num['number']}です。" . PHP_EOL;
+            $suitNum = $this->getSuitAndNumber($count);
+            echo "あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL;
             $count++;
         }
     }
 
+    /**
+     * プレイヤーのターンに、プレイヤーがカードを引く処理
+     *
+     * @return void
+     */
     public function drawCard(): void
     {
-        $count = self::INIT_DRAW_NUMBER;
         // プレイヤーの得点の合計を表示
-        // プレイヤーにカードを引くか確認する
-        while (true) {
-            echo "あなたの現在の得点は{$this->getPoint()}です。カードを引きますか？（Y/N）" . PHP_EOL;
+        echo "あなたの現在の得点は{$this->getPoint()}です。";
+        $count = $this->firstDrawCount;
+        // プレイヤーのカードの合計値が21を超えたらプレイヤーの負け
+        while ($this->getPoint() < $this->rule->getPoint()) {
+            // プレイヤーにカードを引くか確認する
+            echo "カードを引きますか？（Y/N）" . PHP_EOL;
             $stdin = trim(fgets(STDIN));
 
-            // 引いた場合
+            // 引く
             if ($stdin === 'Y') {
                 $this->draw();
-                $suit_num = $this->getSuitAndNumber($count);
-                echo "あなたの引いたカードは{$suit_num['suit']}の{$suit_num['number']}です。" . PHP_EOL;
+                $suitNum = $this->getSuitAndNumber($count);
+                echo "あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL;
                 $count++;
             }
 
-            if ($stdin === 'N' || 21 <= $this->point) {
+            // 引かない
+            if ($stdin === 'N' || $this->rule->getPoint() <= $this->point) {
                 break;
             }
         }
-    }
-
-    public function draw(): void
-    {
-        // カードを引く
-        $card = $this->drawCardsFromDeck();
-        $this->cards[] = $card;
-        $this->setPoint($card);
-    }
-
-    public function drawCardsFromDeck(): Card
-    {
-        return $this->cardDeck->drawCard();
-    }
-
-    public function getPoint(): int
-    {
-        return $this->point;
-    }
-
-    private function setPoint(Card $card): void
-    {
-        $this->point += $this->rule->getCardPoints()[$card->cardNumber];
-    }
-
-    public function getSuitAndNumber(int $num): array
-    {
-        return [
-            'suit' => $this->cards[$num]->cardSuit,
-            'number' => $this->cards[$num]->cardNumber
-        ];
     }
 }

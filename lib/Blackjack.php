@@ -1,19 +1,26 @@
 <?php
 
-require('Rule.php');
-require('CardDeck.php');
-require('Player.php');
-require('Dealer.php');
+declare(strict_types=1);
+
+namespace BlackJack;
+
+use CardDeck\CardDeck;
+use Dealer\Dealer;
+use Player\Player;
+use Rule\Rule;
 
 class BlackJack
 {
-    const POINT = 21;
-
     private Rule $rule;
     private CardDeck $cardDeck;
     private Player $player;
     private Dealer $dealer;
 
+    /**
+     * コンストラクタ
+     *
+     * ゲーム開始時に関連クラスのインスタンスを生成
+     */
     public function __construct()
     {
         // ルールのインスタンスを作成する
@@ -26,24 +33,37 @@ class BlackJack
         $this->dealer = new Dealer($this->rule, $this->cardDeck);
     }
 
+    /**
+     * ゲームの進行処理をする関数
+     *
+     * @return void
+     */
     public function start(): void
     {
-        // メッセージ
         echo 'ブラックジャックを開始します。' . PHP_EOL;
-        // プレイヤーがカードデッキからカードを引く
-        $this->player->initDrawCard();
-        // ディーラーがカードデッキからカードを引く
-        $this->dealer->initDrawCard();
-        // プレイヤーのターン
-        $this->player->drawCard();
-        // ディーラーのターン
-        $this->dealer->drawCard();
+        // プレイヤー、ディーラーがそれぞれカードデッキからカードを引く
+        $this->player->firstDrawCard();
+        $this->dealer->firstDrawCard();
+
+        // プレイヤーの得点が21点より低いとき
+        if ($this->player->getPoint() < $this->rule->getPoint()) {
+            $this->player->drawCard();
+            $this->dealer->drawCard();
+        } else {
+            $this->dealer->showSecondCard();
+        }
+
         // 勝敗を判定する
         $this->judgeWinner();
-        // メッセージ
+
         echo 'ブラックジャックを終了します。' . PHP_EOL;
     }
 
+    /**
+     * 勝者の判定を行う関数
+     *
+     * @return void
+     */
     public function judgeWinner(): void
     {
         $playerPoint = $this->player->getPoint();
@@ -52,15 +72,19 @@ class BlackJack
         echo "あなたの得点は{$playerPoint}です。" . PHP_EOL;
         echo "ディーラーの得点は{$dealerPoint}です。" . PHP_EOL;
 
-        $player = abs(Self::POINT - $playerPoint);
-        $dealer = abs(Self::POINT - $dealerPoint);
-
-        if ($player < $dealer) {
+        $player = abs($this->rule->getPoint() - $playerPoint);
+        $dealer = abs($this->rule->getPoint()  - $dealerPoint);
+        if ($player < $dealer && $this->isPlayerPoint($playerPoint)) {
             echo 'あなたの勝ちです。' . PHP_EOL;
-        } elseif ($dealer < $player) {
-            echo 'ディーラーの勝ちです。' . PHP_EOL;
-        } elseif ($dealer === $player) {
+        } elseif ($dealer === $player && $this->isPlayerPoint($playerPoint)) {
             echo '引き分けです。' . PHP_EOL;
+        } else {
+            echo 'ディーラーの勝ちです。' . PHP_EOL;
         }
+    }
+
+    private function isPlayerPoint(int $point): bool
+    {
+        return $point <= $this->rule->getPoint();
     }
 }
