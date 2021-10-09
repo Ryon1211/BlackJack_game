@@ -7,12 +7,12 @@ use CardDeck\CardDeck;
 use Dealer\Dealer;
 use Rule\Rule;
 
+
 require_once(__DIR__ . '/../lib/Role.php');
 require_once(__DIR__ . '/../lib/CardDeck.php');
 require_once(__DIR__ . '/../lib/Dealer.php');
 require_once(__DIR__ . '/../lib/Rule.php');
-
-
+require_once(__DIR__ . '/../lib/Utility.php');
 
 final class DealerTest extends TestCase
 {

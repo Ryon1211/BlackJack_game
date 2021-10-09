@@ -38,7 +38,22 @@ class Rule
      * ゲームで勝敗を判定するための点数
      * @var int
      */
-    private const POINT = 21;
+    private const WINNING_SCORE = 21;
+
+    /**
+     * ディーラーは以下の点数までカードを引き続ける
+     *
+     * @var int
+     */
+    private const DEALER_TAKE_SCORE = 17;
+
+    /**
+     * 最初のターンで引くカードの枚数
+     *
+     * @var int
+     */
+    private const FIRST_DRAW_CARD = 2;
+
 
     /**
      * CARD_POINTSの配列を返却
@@ -78,27 +93,52 @@ class Rule
      * カードAの点数のみを計算する処理
      *
      * @param integer $point
-     * @param integer $count
+     * @param integer $cardCount
      * @return integer
      */
-    public function calcCardAPoint(int $point, int $count): int
+    public function calcCardAPoint(int $point, int $cardCount): int
     {
         $cardAPoint = 0;
-        $i = 0;
-        while ($i < $count) {
+        $count = 0;
+        while ($count < $cardCount) {
             if ($point <= 10 && $cardAPoint <= 10) {
                 $cardAPoint += self::CARD_POINTS['A'] + self::A_ADD_POINT;
             } else {
                 $cardAPoint += self::CARD_POINTS['A'];
             }
-            $i++;
+            $count++;
         }
 
         return $cardAPoint;
     }
 
-    public function getPoint(): int
+    /**
+     * ゲームの勝敗得点を返却
+     *
+     * @return integer
+     */
+    public function getWinningScore(): int
     {
-        return self::POINT;
+        return self::WINNING_SCORE;
+    }
+
+    /**
+     * ディーラーがカードを引き続ける得点を返却
+     *
+     * @return integer
+     */
+    public function getDealerTakeScore(): int
+    {
+        return self::DEALER_TAKE_SCORE;
+    }
+
+    /**
+     * １順目に引くカードの枚数
+     *
+     * @return integer
+     */
+    public function getFirstDrawCard(): int
+    {
+        return self::FIRST_DRAW_CARD;
     }
 }

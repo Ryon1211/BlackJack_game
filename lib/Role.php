@@ -11,25 +11,11 @@ use Rule\Rule;
 abstract class Role
 {
     /**
-     * 最初のターンで引くカードの枚数
-     *
-     * @var int $firstDrawCount
-     */
-    protected int $firstDrawCount = 2;
-
-    /**
-     * ディーラーは以下の点数までカードを引き続ける
-     *
-     * @var int $dealerTakePoint
-     */
-    protected int $dealerTakePoint = 17;
-
-    /**
      * 今まで引いたカードを保存する配列
      *
      * @var array<int,Card>
      */
-    private array $cards;
+    protected array $cards;
 
     /**
      * 得点を保存する変数
@@ -58,9 +44,9 @@ abstract class Role
     /**
      * ターンになったときカードを引く処理
      *
-     * @return void
+     * @return bool
      */
-    abstract public function drawCard(): void;
+    abstract public function drawCard(): bool;
 
     /**
      * カードを引いた際の一連の処理

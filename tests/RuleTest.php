@@ -62,4 +62,22 @@ final class RuleTest extends TestCase
         $this->assertSame(13, $rule->calcPoint($cards4));
         $this->assertSame(15, $rule->calcPoint($cards5));
     }
+
+    public function testGetWinningScore(): void
+    {
+        $rule = new Rule();
+        $this->assertSame(21, $rule->getWinningScore());
+    }
+
+    public function testGetDealerTakeScore(): void
+    {
+        $rule = new Rule();
+        $this->assertSame(17, $rule->getDealerTakeScore());
+    }
+
+    public function testGetFirstDrawCard(): void
+    {
+        $rule = new Rule();
+        $this->assertSame(2, $rule->getFirstDrawCard());
+    }
 }

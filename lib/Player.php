@@ -7,6 +7,7 @@ namespace Player;
 use CardDeck\CardDeck;
 use Role\Role;
 use Rule\Rule;
+use Utility\Utility;
 
 class Player extends Role
 {
@@ -30,42 +31,33 @@ class Player extends Role
     {
         $count = 0;
 
-        while ($count < $this->firstDrawCount) {
+        while ($count < $this->rule->getFirstDrawCard()) {
             $this->draw();
             $suitNum = $this->getSuitAndNumber($count);
-            echo "あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL;
             $count++;
+            Utility::showMsg("あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。");
         }
     }
 
     /**
      * プレイヤーのターンに、プレイヤーがカードを引く処理
      *
-     * @return void
+     * @return bool
      */
-    public function drawCard(): void
+    public function drawCard(): bool
     {
-        // プレイヤーの得点の合計を表示
-        echo "あなたの現在の得点は{$this->getPoint()}です。";
-        $count = $this->firstDrawCount;
-        // プレイヤーのカードの合計値が21を超えたらプレイヤーの負け
-        while ($this->getPoint() < $this->rule->getPoint()) {
-            // プレイヤーにカードを引くか確認する
-            echo "カードを引きますか？（Y/N）" . PHP_EOL;
-            $stdin = trim(fgets(STDIN));
+        if ($this->getPoint() < $this->rule->getWinningScore()) {
+            Utility::showMsg("あなたの現在の得点は{$this->getPoint()}です。カードを引きますか？（Y/N）");
+            $stdin = Utility::getStdin();
 
-            // 引く
-            if ($stdin === 'Y') {
+            if ($stdin === 'Y' && $this->point <= $this->rule->getWinningScore()) {
                 $this->draw();
+                $count = count($this->cards) - 1;
                 $suitNum = $this->getSuitAndNumber($count);
-                echo "あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL;
-                $count++;
-            }
-
-            // 引かない
-            if ($stdin === 'N' || $this->rule->getPoint() <= $this->point) {
-                break;
+                Utility::showMsg("あなたの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。");
+                return true;
             }
         }
+        return false;
     }
 }

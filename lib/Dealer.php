@@ -7,6 +7,7 @@ namespace Dealer;
 use CardDeck\CardDeck;
 use Role\Role;
 use Rule\Rule;
+use Utility\Utility;
 
 class Dealer extends Role
 {
@@ -30,33 +31,34 @@ class Dealer extends Role
     {
         $count = 0;
 
-        while ($count < $this->firstDrawCount) {
+        while ($count < $this->rule->getFirstDrawCard()) {
             $this->draw();
             $count++;
         }
 
         $suitNum = $this->getSuitAndNumber(0);
-        echo "ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。" . PHP_EOL .
-            'ディーラーの引いた２枚めのカードはわかりません。' . PHP_EOL;
+        Utility::showMsg("ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}です。");
+        Utility::showMsg('ディーラーの引いた２枚めのカードはわかりません。');
     }
 
     /**
      * ディーラーのターンになったとき、一定の得点以上になるまでカードを引く処理
      *
-     * @return void
+     * @return bool
      */
-    public function drawCard(): void
+    public function drawCard(): bool
     {
-        $this->showSecondCard();
-        echo "ディーラーの現在の得点は{$this->getPoint()}です。" . PHP_EOL;
-
-        $count = $this->firstDrawCount;
-        while ($this->point < $this->dealerTakePoint) {
+        Utility::showMsg('ディーラーの引いた２枚めのカードはわかりません。');
+        Utility::showMsg("ディーラーの現在の得点は{$this->getPoint()}です。");
+        $count = count($this->cards);
+        if ($this->point < $this->rule->getDealerTakeScore()) {
             $this->draw();
             $suitNum = $this->getSuitAndNumber($count);
-            echo "ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}でした。" . PHP_EOL;
-            $count++;
+            Utility::showMsg("ディーラーの引いたカードは{$suitNum['suit']}の{$suitNum['number']}でした。");
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -66,7 +68,7 @@ class Dealer extends Role
      */
     public function showSecondCard(): void
     {
-        $suitNum = $this->getSuitAndNumber($this->firstDrawCount - 1);
-        echo "ディーラーの引いた2枚目のカードは{$suitNum['suit']}の{$suitNum['number']}でした。" . PHP_EOL;
+        $suitNum = $this->getSuitAndNumber($this->rule->getFirstDrawCard() - 1);
+        Utility::showMsg("ディーラーの引いた2枚目のカードは{$suitNum['suit']}の{$suitNum['number']}でした。");
     }
 }
